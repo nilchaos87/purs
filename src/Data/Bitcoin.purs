@@ -1,4 +1,4 @@
-module Data.Bitcoin (fetchBalance) where
+module Data.Bitcoin (fetchWallet) where
 
 import Prelude
 import Control.Monad.Aff (Aff)
@@ -8,15 +8,24 @@ import Network.HTTP.Affjax (AJAX, get)
 
 foreign import deriveAddress :: String -> Int -> String
 
-fetchBalance :: forall e. String -> Aff (ajax :: AJAX | e) Int
-fetchBalance = fetchBalance_ 0 0
+type Key = String
+type ReceiveAddress = String
+type Balance = Int
+type Wallet = { receiveAddress :: ReceiveAddress, balance :: Balance }
 
-fetchBalance_ :: forall e. Int -> Int -> String -> Aff (ajax :: AJAX | e) Int
-fetchBalance_ acc n addr = do
-  xhr <- get $ "https://blockchain.info/q/addressbalance/" <> (deriveAddress addr n)
-  let balance = acc + (parseBalance $ Int.fromString xhr.response)
-  if balance == acc then (pure balance) else (fetchBalance_ balance (n + 1) addr)
+fetchWallet :: forall e. Key -> Aff (ajax :: AJAX | e) Wallet
+fetchWallet = fetchWallet_ 0 0
 
-parseBalance :: Maybe Int -> Int
-parseBalance Nothing = 0
-parseBalance (Just balance) = balance
+fetchWallet_ :: forall e. Balance -> Int -> Key -> Aff (ajax :: AJAX | e) Wallet
+fetchWallet_ balance n key = do
+  xhr <- get $ "https://blockchain.info/q/addressbalance/" <> receiveAddress
+  let additionalBalance = balanceFromString xhr.response
+  if (additionalBalance == 0) then (pure $ currentWallet) else (fetchWallet_ (balance + additionalBalance) (n + 1) key)
+  where
+    receiveAddress = deriveAddress key n
+    currentWallet = { receiveAddress, balance }
+
+balanceFromString :: String -> Balance
+balanceFromString str = case (Int.fromString str) of
+  Nothing -> 0
+  Just b -> b
