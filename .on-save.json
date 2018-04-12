@@ -1,0 +1,7 @@
+[
+  {
+    "srcDir": "./src",
+    "files": "**/*.purs",
+    "command": "node purs-format.js --src ${srcFile} --dest ${destFile}"
+  }
+]
