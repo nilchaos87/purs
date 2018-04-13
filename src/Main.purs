@@ -32,7 +32,7 @@ main = runHalogenAff $ do
   body ← awaitBody
   key ← liftEff getKey
   io ← runUI App.component key body
-  io.query $ action $ App.ChangeKey key
+  io.query $ action App.FetchWallet
   runProcess (hashChangeProducer $$ hashChangeConsumer io.query)
 
 keyFromHash ∷ String → Maybe String
@@ -47,6 +47,7 @@ hashChangeConsumer ∷ ∀ e. (App.Query ~> Aff (HalogenEffects e)) → Consumer
 hashChangeConsumer query = consumer \event → do
   let address = keyFromHash $ Str.dropWhile (_ /= '#') $ newURL event
   query $ action $ App.ChangeKey address
+  query $ action App.FetchWallet
   pure Nothing
 
 hashChangeProducer ∷ ∀ e. Producer HashChangeEvent (Aff (avar ∷ AVAR, dom ∷ DOM | e)) Unit
