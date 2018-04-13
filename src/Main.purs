@@ -32,6 +32,7 @@ main = runHalogenAff $ do
   body ← awaitBody
   key ← liftEff getKey
   io ← runUI App.component key body
+  io.query $ action $ App.ChangeKey key
   runProcess (hashChangeProducer $$ hashChangeConsumer io.query)
 
 keyFromHash ∷ String → Maybe String

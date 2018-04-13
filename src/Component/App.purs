@@ -20,15 +20,15 @@ type Message = Void
 component ∷ ∀ a. H.Component HH.HTML Query Input Message (Aff (ajax ∷ AJAX | a))
 component =
   H.component
-    { initialState
+    { initialState: const initialState
     , render
     , eval
     , receiver: HE.input ChangeKey
     }
   where
 
-    initialState ∷ Input → State
-    initialState key = { key, wallet: Nothing }
+    initialState ∷ State
+    initialState = { key: Nothing, wallet: Nothing }
 
     render ∷ State → H.ComponentHTML Query
     render state = HH.div_ [ HH.text $ displayWallet state.wallet ]
@@ -37,10 +37,10 @@ component =
         displayWallet (Just wallet) = wallet.receiveAddress <> ": " <> (show wallet.balance)
 
     eval ∷ Query ~> H.ComponentDSL State Query Message (Aff (ajax ∷ AJAX | a))
-    eval (ChangeKey key next) =
+    eval (ChangeKey key next) = do
+      H.put { key, wallet: Nothing }
       case key of
-        Nothing → do
-          H.put { key, wallet: Nothing }
+        Nothing →
           pure next
         Just k → do
           wallet ← H.liftAff $ fetchWallet k
