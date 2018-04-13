@@ -21,7 +21,7 @@ fetchWallet_ misses balance lastHitN n key = do
   let miss = currentBalance == 0
   let newMisses = if miss then (misses + 1) else 0
   let newLastHitN = if miss then lastHitN else n
-  if (newMisses == 5) then (pure $ wallet currentBalance (lastHitN + 2)) else (fetchWallet_ newMisses newBalance newLastHitN (n + 1) key)
+  if (newMisses == 5) then (pure $ wallet newBalance (lastHitN + 2)) else (fetchWallet_ newMisses newBalance newLastHitN (n + 1) key)
   where
     currentAddress = deriveAddress key n
     wallet bal nohitN = { receiveAddress: (deriveAddress key nohitN), balance: bal }
