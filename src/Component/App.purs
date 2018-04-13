@@ -7,6 +7,7 @@ import Data.Maybe (Maybe(..))
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
+import Halogen.HTML.Properties as HP
 import Network.HTTP.Affjax (AJAX)
 
 type State = { key ∷ Maybe String, wallet ∷ Maybe Wallet }
@@ -33,10 +34,15 @@ component =
     initialState key = { key, wallet: Nothing }
 
     render ∷ State → H.ComponentHTML Query
-    render state = HH.div_ [ HH.text $ displayWallet state.wallet ]
+    render state = walletView state.wallet
       where
-        displayWallet Nothing = "--"
-        displayWallet (Just wallet) = wallet.receiveAddress <> ": " <> (show wallet.balance)
+        walletView Nothing = HH.text "No wallet to show!"
+        walletView (Just { receiveAddress, balance }) =
+          HH.div_
+            [ HH.img [ HP.src $ "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" <> receiveAddress ]
+            , HH.div_ [ HH.text receiveAddress ]
+            , HH.div_ [ HH.text $ show balance ]
+            ]
 
     eval ∷ Query ~> H.ComponentDSL State Query Message (Aff (ajax ∷ AJAX | a))
     eval (ChangeKey key next) = do
