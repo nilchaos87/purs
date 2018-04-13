@@ -24,27 +24,28 @@ import DOM.HTML.Window (location)
 import Halogen (action)
 import Halogen.Aff (HalogenEffects, awaitBody, runHalogenAff)
 import Halogen.VDom.Driver (runUI)
+import Network.HTTP.Affjax (AJAX)
 import Component.App as App
 
-main ∷ Eff (HalogenEffects ()) Unit
+main ∷ Eff (HalogenEffects (ajax ∷ AJAX)) Unit
 main = runHalogenAff $ do
   body ← awaitBody
-  address ← liftEff getAddress
-  io ← runUI App.component address body
+  key ← liftEff getKey
+  io ← runUI App.component key body
   runProcess (hashChangeProducer $$ hashChangeConsumer io.query)
 
-addressFromHash ∷ String → Maybe String
-addressFromHash "" = Nothing
-addressFromHash "#" = Nothing
-addressFromHash h = Just $ Str.drop 1 h
+keyFromHash ∷ String → Maybe String
+keyFromHash "" = Nothing
+keyFromHash "#" = Nothing
+keyFromHash h = Just $ Str.drop 1 h
 
-getAddress ∷ ∀ e. Eff (dom ∷ DOM | e) (Maybe String)
-getAddress = addressFromHash <$> (window >>= location >>= hash)
+getKey ∷ ∀ e. Eff (dom ∷ DOM | e) (Maybe String)
+getKey = keyFromHash <$> (window >>= location >>= hash)
 
 hashChangeConsumer ∷ ∀ e. (App.Query ~> Aff (HalogenEffects e)) → Consumer HashChangeEvent (Aff (HalogenEffects e)) Unit
 hashChangeConsumer query = consumer \event → do
-  let address = addressFromHash $ Str.dropWhile (_ /= '#') $ newURL event
-  query $ action $ App.ChangeAddress address
+  let address = keyFromHash $ Str.dropWhile (_ /= '#') $ newURL event
+  query $ action $ App.ChangeKey address
   pure Nothing
 
 hashChangeProducer ∷ ∀ e. Producer HashChangeEvent (Aff (avar ∷ AVAR, dom ∷ DOM | e)) Unit

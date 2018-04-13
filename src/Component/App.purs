@@ -1,36 +1,48 @@
-module Component.App (Query(ChangeAddress), component) where
+module Component.App (Query(ChangeKey), component) where
 
 import Prelude
-import Data.Maybe (Maybe)
+import Control.Monad.Aff (Aff)
+import Data.Bitcoin (Wallet, fetchWallet)
+import Data.Maybe (Maybe(..))
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
+import Network.HTTP.Affjax (AJAX)
 
-type State = { address ∷ Maybe String }
+type State = { key ∷ Maybe String, wallet ∷ Maybe Wallet }
 
-data Query a = ChangeAddress (Maybe String) a
+data Query a = ChangeKey (Maybe String) a
 
 type Input = Maybe String
 
 type Message = Void
 
-component ∷ ∀ a. H.Component HH.HTML Query Input Message a
+component ∷ ∀ a. H.Component HH.HTML Query Input Message (Aff (ajax ∷ AJAX | a))
 component =
   H.component
     { initialState
     , render
     , eval
-    , receiver: HE.input ChangeAddress
+    , receiver: HE.input ChangeKey
     }
   where
 
     initialState ∷ Input → State
-    initialState address = { address }
+    initialState key = { key, wallet: Nothing }
 
     render ∷ State → H.ComponentHTML Query
-    render state = HH.div_ [ HH.text $ show state.address ]
+    render state = HH.div_ [ HH.text $ displayWallet state.wallet ]
+      where
+        displayWallet Nothing = "--"
+        displayWallet (Just wallet) = wallet.receiveAddress <> ": " <> (show wallet.balance)
 
-    eval ∷ Query ~> H.ComponentDSL State Query Message a
-    eval (ChangeAddress address next) = do
-      H.put { address }
-      pure next
+    eval ∷ Query ~> H.ComponentDSL State Query Message (Aff (ajax ∷ AJAX | a))
+    eval (ChangeKey key next) =
+      case key of
+        Nothing → do
+          H.put { key, wallet: Nothing }
+          pure next
+        Just k → do
+          wallet ← H.liftAff $ fetchWallet k
+          H.put { key, wallet: Just wallet }
+          pure next
