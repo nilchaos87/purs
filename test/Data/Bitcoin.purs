@@ -17,4 +17,4 @@ main =
     it "should get the total balance for the wallet" do
       let xpub = "xpub6CbP8EKGovffnSKQtAYvV44qqCJh9jPBEATfxu78NekYCxRv7MgS55P1yuL1UVfaVkVo9SkvHtBKXUz2rKLsvqemztBUcrP8n1xwqzmLPgx"
       wallet <- liftAff $ fetchWallet xpub
-      wallet.balance `shouldEqual` 39191473
+      wallet.balance `shouldEqual` 39405870
