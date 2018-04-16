@@ -41,13 +41,14 @@ component =
         walletView (Just { receiveAddress, balance }) =
           HH.div [ HP.class_ $ ClassName "app" ]
             [ HH.header_ [ HH.text "Purs" ]
-            , HH.main_
-                [ HH.div [ HP.class_ $ ClassName "balance" ] [ HH.text $ show balance ]
-                , HH.div [ HP.class_ $ ClassName "receive-address" ]
-                    [ HH.img [ HP.src $ "https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=" <> receiveAddress ]
-                    , HH.div [ HP.class_ $ ClassName "text" ] [ HH.text receiveAddress ]
-                    ]
+            , HH.div [ HP.class_ $ ClassName "balance" ]
+                [ HH.div [ HP.class_ $ ClassName "label" ] [ HH.text "Current Balance" ]
+                , HH.div [ HP.class_ $ ClassName "value" ] [ HH.text $ show balance ]
                 ]
+            , HH.div [ HP.class_ $ ClassName "receive-address-qrcode" ]
+                [ HH.img [ HP.src $ "https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=" <> receiveAddress ]
+                ]
+            , HH.div [ HP.class_ $ ClassName "receive-address-text" ] [ HH.text receiveAddress ]
             ]
 
     eval ∷ Query ~> H.ComponentDSL State Query Message (Aff (ajax ∷ AJAX | a))

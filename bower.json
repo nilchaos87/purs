@@ -12,7 +12,8 @@
     "purescript-spec": "^2.0.0",
     "purescript-affjax": "^5.0.0",
     "purescript-halogen": "^3.1.2",
-    "purescript-aff-coroutines": "^6.0.0"
+    "purescript-aff-coroutines": "^6.0.0",
+    "purescript-numbers": "^5.0.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^3.0.0"

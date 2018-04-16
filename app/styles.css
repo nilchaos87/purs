@@ -16,24 +16,31 @@ html {
   text-align: center;
 }
 
-.app > * {
-  padding: 1rem;
+.app > *:not(.receive-address-qrcode):not(header) {
+  flex: 1;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
 }
 
 header {
   /* http://paletton.com/#uid=14e0u0kllllaFw0g0qFqFg0w0aF */
+  padding: 1rem;
   background: #13073a;
   color: #887caf;
-  font-size: 2rem;
   display: block;
   text-align: center;
   text-transform: uppercase;
 }
 
-main > *, .receive-address > * {
-  margin-bottom: 1rem;
+header, .balance .value {
+  font-size: 2rem;
 }
 
-.receive-address img {
+.receive-address-qrcode {
+  padding: 0 1rem;
+}
+
+.receive-address-qrcode img {
   max-width: 100%;
 }
