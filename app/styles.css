@@ -16,13 +16,6 @@ html {
   text-align: center;
 }
 
-.app > *:not(.receive-address-qrcode):not(header) {
-  flex: 1;
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: center;
-}
-
 header {
   /* http://paletton.com/#uid=14e0u0kllllaFw0g0qFqFg0w0aF */
   padding: 1rem;
@@ -37,10 +30,24 @@ header, .balance .value {
   font-size: 2rem;
 }
 
+.balance, .receive-address-text {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+}
+
+.balance {
+  flex: 2;
+}
+
 .receive-address-qrcode {
   padding: 0 1rem;
 }
 
 .receive-address-qrcode img {
   max-width: 100%;
+}
+
+.receive-address-text {
+  flex: 1;
 }
