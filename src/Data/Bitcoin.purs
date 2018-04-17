@@ -13,33 +13,33 @@ foreign import deriveAddress ∷ String → Int → String
 
 type Wallet = { receiveAddress ∷ String, balance ∷ Number }
 
-fetchWallet :: forall e. String -> Aff (ajax :: AJAX | e) Wallet
+fetchWallet ∷ ∀ e. String → Aff (ajax ∷ AJAX | e) Wallet
 fetchWallet key = do
-  addresses <- collectAddresses $ fromFoldable []
+  addresses ← collectAddresses $ fromFoldable []
   let receiveAddress = findReceiveAddress addresses
   let balance = sum $ snd <$> addresses
   pure $ { receiveAddress, balance }
 
   where
 
-    findReceiveAddress :: List (Tuple String Number) -> String
+    findReceiveAddress ∷ List (Tuple String Number) → String
     findReceiveAddress addresses =
       case ((head <<< ((map fst) <<< (filter (((==) 0.0) <<< snd)) <<< reverse)) addresses) of
-        Nothing -> deriveAddress key 0
-        Just val -> val
+        Nothing → deriveAddress key 0
+        Just val → val
 
-    collectAddresses :: List (Tuple String Number) -> Aff (ajax :: AJAX | e) (List (Tuple String Number))
+    collectAddresses ∷ List (Tuple String Number) → Aff (ajax ∷ AJAX | e) (List (Tuple String Number))
     collectAddresses addrs = do
-      addr <- fetchAddress $ length addrs
+      addr ← fetchAddress $ length addrs
       let nextAddrs = addr : addrs
       if ((sum $ snd <$> (take 5 nextAddrs)) == 0.0)
         then (pure $ drop 4 nextAddrs)
         else collectAddresses nextAddrs
 
-    fetchAddress :: Int -> Aff (ajax :: AJAX | e) (Tuple String Number)
+    fetchAddress ∷ Int → Aff (ajax ∷ AJAX | e) (Tuple String Number)
     fetchAddress n = do
       let addr = deriveAddress key n
-      bal <- fetchBalance addr
+      bal ← fetchBalance addr
       pure $ Tuple addr bal
 
     fetchBalance ∷ String → Aff (ajax ∷ AJAX | e) Number
