@@ -36,13 +36,18 @@ component =
     initialState key = { key, wallet: Nothing }
 
     render ∷ State → H.ComponentHTML Query
-    render { wallet } = HH.div [ HP.class_ $ ClassName "app" ] $ (HH.header_ [ HH.text "Purs" ]) : content
+    render { key, wallet } = HH.div [ HP.class_ $ ClassName "app" ] $ (HH.header_ [ HH.text "Purs" ]) : content
       where
         content =
           case wallet of
             Nothing →
-              [ HH.div [ HP.class_ $ ClassName "no-wallet" ]
-                  [ HH.text "No wallet" ]
+              case key of
+                Nothing →
+                  [ HH.div [ HP.class_ $ ClassName "no-key" ] [ HH.text "No key selected" ] ]
+                Just _ →
+                  [ HH.div [ HP.class_ $ ClassName "loading" ]
+                      [ HH.div [ HP.class_ $ ClassName "indicator" ] []
+                      ]
                   ]
             Just { receiveAddress, balance } →
               [ HH.div [ HP.class_ $ ClassName "balance" ]

@@ -22,7 +22,6 @@ header {
   background: #13073a;
   color: #887caf;
   display: block;
-  text-align: center;
   text-transform: uppercase;
 }
 
@@ -48,6 +47,41 @@ header, .balance .value {
   max-width: 100%;
 }
 
-.receive-address-text {
+.receive-address-text, .loading, .no-key {
   flex: 1;
+}
+
+.loading, .no-key {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+}
+
+.loading .indicator {
+  display: inline-block;
+  width: 64px;
+  height: 64px;
+  position: absolute;
+  left: calc(50% - 32px);
+}
+
+.loading .indicator:after {
+  content: " ";
+  display: block;
+  width: 46px;
+  height: 46px;
+  margin: 1px;
+  border-radius: 50%;
+  border: 5px solid #fff;
+  border-color: #fff transparent #fff transparent;
+  animation: loading-indicator 1.2s linear infinite;
+}
+
+@keyframes loading-indicator {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
