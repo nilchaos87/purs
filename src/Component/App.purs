@@ -3,6 +3,7 @@ module Component.App (Query(ChangeKey, FetchWallet), component) where
 import Prelude
 import Control.Monad.Aff (Aff)
 import Data.Bitcoin (Wallet, fetchWallet)
+import Data.Array ((:))
 import Data.Maybe (Maybe(..))
 import Halogen as H
 import Halogen.HTML as HH
@@ -35,21 +36,24 @@ component =
     initialState key = { key, wallet: Nothing }
 
     render ∷ State → H.ComponentHTML Query
-    render state = walletView state.wallet
+    render { wallet } = HH.div [ HP.class_ $ ClassName "app" ] $ (HH.header_ [ HH.text "Purs" ]) : content
       where
-        walletView Nothing = HH.text "No wallet to show!"
-        walletView (Just { receiveAddress, balance }) =
-          HH.div [ HP.class_ $ ClassName "app" ]
-            [ HH.header_ [ HH.text "Purs" ]
-            , HH.div [ HP.class_ $ ClassName "balance" ]
-                [ HH.div [ HP.class_ $ ClassName "label" ] [ HH.text "Current Balance" ]
-                , HH.div [ HP.class_ $ ClassName "value" ] [ HH.text $ show balance ]
-                ]
-            , HH.div [ HP.class_ $ ClassName "receive-address-qrcode" ]
-                [ HH.img [ HP.src $ "https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=" <> receiveAddress ]
-                ]
-            , HH.div [ HP.class_ $ ClassName "receive-address-text" ] [ HH.text receiveAddress ]
-            ]
+        content =
+          case wallet of
+            Nothing →
+              [ HH.div [ HP.class_ $ ClassName "no-wallet" ]
+                  [ HH.text "No wallet" ]
+                  ]
+            Just { receiveAddress, balance } →
+              [ HH.div [ HP.class_ $ ClassName "balance" ]
+                  [ HH.div [ HP.class_ $ ClassName "label" ] [ HH.text "Current Balance" ]
+                  , HH.div [ HP.class_ $ ClassName "value" ] [ HH.text $ show balance ]
+                  ]
+              , HH.div [ HP.class_ $ ClassName "receive-address-qrcode" ]
+                  [ HH.img [ HP.src $ "https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=" <> receiveAddress ]
+                  ]
+              , HH.div [ HP.class_ $ ClassName "receive-address-text" ] [ HH.text receiveAddress ]
+              ]
 
     eval ∷ Query ~> H.ComponentDSL State Query Message (Aff (ajax ∷ AJAX | a))
     eval (ChangeKey key next) = do
