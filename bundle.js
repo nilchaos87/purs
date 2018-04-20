@@ -8809,16 +8809,26 @@ var component = (function () {
                     return [ Halogen_HTML_Elements.div([ Halogen_HTML_Properties.class_("no-key") ])([ Halogen_HTML_Core.text("No key selected") ]) ];
                 };
                 if (v.key instanceof Data_Maybe.Just) {
-                    return [ Halogen_HTML_Elements.div([ Halogen_HTML_Properties.class_("loading") ])([ Halogen_HTML_Elements.div([ Halogen_HTML_Properties.class_("indicator") ])([  ]) ]) ];
+                    return [ Halogen_HTML_Elements.div([ Halogen_HTML_Properties.class_("loading") ])([ Halogen_HTML_Elements.i([ Halogen_HTML_Properties.class_("fa fa-spinner fa-spin") ])([  ]) ]) ];
                 };
-                throw new Error("Failed pattern match at Component.App line 44, column 15 - line 51, column 20: " + [ v.key.constructor.name ]);
+                throw new Error("Failed pattern match at Component.App line 56, column 15 - line 63, column 20: " + [ v.key.constructor.name ]);
             };
             if (v.wallet instanceof Data_Maybe.Just) {
                 return [ Halogen_HTML_Elements.div([ Halogen_HTML_Properties.class_("balance") ])([ Halogen_HTML_Elements.div([ Halogen_HTML_Properties.class_("label") ])([ Halogen_HTML_Core.text("Current Balance") ]), Halogen_HTML_Elements.div([ Halogen_HTML_Properties.class_("value") ])([ Halogen_HTML_Core.text(Data_Show.show(Data_Show.showNumber)(v.wallet.value0.balance)) ]) ]), Halogen_HTML_Elements.div([ Halogen_HTML_Properties.class_("receive-address-qrcode") ])([ Halogen_HTML_Elements.img([ Halogen_HTML_Properties.src("https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=" + v.wallet.value0.receiveAddress) ]) ]), Halogen_HTML_Elements.div([ Halogen_HTML_Properties.class_("receive-address-text") ])([ Halogen_HTML_Core.text(v.wallet.value0.receiveAddress) ]) ];
             };
-            throw new Error("Failed pattern match at Component.App line 42, column 11 - line 61, column 16: " + [ v.wallet.constructor.name ]);
+            throw new Error("Failed pattern match at Component.App line 54, column 11 - line 73, column 16: " + [ v.wallet.constructor.name ]);
         })();
-        return Halogen_HTML_Elements.div([ Halogen_HTML_Properties.class_("app") ])(Data_Array.cons(Halogen_HTML_Elements.header_([ Halogen_HTML_Core.text("Purs") ]))(content));
+        var action = (function () {
+            if (v.wallet instanceof Data_Maybe.Nothing) {
+                return [  ];
+            };
+            if (v.wallet instanceof Data_Maybe.Just) {
+                return [ Halogen_HTML_Elements.i([ Halogen_HTML_Properties.class_("fa fa-refresh"), Halogen_HTML_Events.onClick(Halogen_HTML_Events.input_(FetchWallet.create)) ])([  ]) ];
+            };
+            throw new Error("Failed pattern match at Component.App line 43, column 11 - line 52, column 16: " + [ v.wallet.constructor.name ]);
+        })();
+        var header = Halogen_HTML_Elements.header_(Data_Array.cons(Halogen_HTML_Elements.h1_([ Halogen_HTML_Core.text("Purs") ]))(action));
+        return Halogen_HTML_Elements.div([ Halogen_HTML_Properties.class_("app") ])(Data_Array.cons(header)(content));
     };
     var initialState = function (key) {
         return {
@@ -8839,23 +8849,28 @@ var component = (function () {
             return Control_Bind.bind(Halogen_Query_HalogenM.bindHalogenM)(Control_Monad_State_Class.gets(Halogen_Query_HalogenM.monadStateHalogenM)(function (v1) {
                 return v1.key;
             }))(function (v1) {
-                if (v1 instanceof Data_Maybe.Nothing) {
-                    return Control_Applicative.pure(Halogen_Query_HalogenM.applicativeHalogenM)(v.value0);
-                };
-                if (v1 instanceof Data_Maybe.Just) {
-                    return Control_Bind.bind(Halogen_Query_HalogenM.bindHalogenM)(Control_Monad_Aff_Class.liftAff(Halogen_Query_HalogenM.monadAffHalogenM(Control_Monad_Aff_Class.monadAffAff))(Data_Bitcoin.fetchWallet(v1.value0)))(function (v2) {
-                        return Control_Bind.discard(Control_Bind.discardUnit)(Halogen_Query_HalogenM.bindHalogenM)(Control_Monad_State_Class.put(Halogen_Query_HalogenM.monadStateHalogenM)({
-                            key: v1,
-                            wallet: new Data_Maybe.Just(v2)
-                        }))(function () {
-                            return Control_Applicative.pure(Halogen_Query_HalogenM.applicativeHalogenM)(v.value0);
+                return Control_Bind.discard(Control_Bind.discardUnit)(Halogen_Query_HalogenM.bindHalogenM)(Control_Monad_State_Class.put(Halogen_Query_HalogenM.monadStateHalogenM)({
+                    key: v1,
+                    wallet: Data_Maybe.Nothing.value
+                }))(function () {
+                    if (v1 instanceof Data_Maybe.Nothing) {
+                        return Control_Applicative.pure(Halogen_Query_HalogenM.applicativeHalogenM)(v.value0);
+                    };
+                    if (v1 instanceof Data_Maybe.Just) {
+                        return Control_Bind.bind(Halogen_Query_HalogenM.bindHalogenM)(Control_Monad_Aff_Class.liftAff(Halogen_Query_HalogenM.monadAffHalogenM(Control_Monad_Aff_Class.monadAffAff))(Data_Bitcoin.fetchWallet(v1.value0)))(function (v2) {
+                            return Control_Bind.discard(Control_Bind.discardUnit)(Halogen_Query_HalogenM.bindHalogenM)(Control_Monad_State_Class.put(Halogen_Query_HalogenM.monadStateHalogenM)({
+                                key: v1,
+                                wallet: new Data_Maybe.Just(v2)
+                            }))(function () {
+                                return Control_Applicative.pure(Halogen_Query_HalogenM.applicativeHalogenM)(v.value0);
+                            });
                         });
-                    });
-                };
-                throw new Error("Failed pattern match at Component.App line 69, column 7 - line 75, column 16: " + [ v1.constructor.name ]);
+                    };
+                    throw new Error("Failed pattern match at Component.App line 82, column 7 - line 88, column 16: " + [ v1.constructor.name ]);
+                });
             });
         };
-        throw new Error("Failed pattern match at Component.App line 63, column 5 - line 63, column 79: " + [ v.constructor.name ]);
+        throw new Error("Failed pattern match at Component.App line 75, column 5 - line 75, column 79: " + [ v.constructor.name ]);
     };
     return Halogen_Component.lifecycleComponent(Halogen_HTML_Core.bifunctorHTML)({
         initialState: initialState,
