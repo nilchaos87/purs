@@ -23,9 +23,22 @@ header {
   color: #887caf;
   display: block;
   text-transform: uppercase;
+  position: relative;
 }
 
-header, .balance .value {
+header h1 {
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+}
+
+header i {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+}
+
+header, header h1, .balance .value {
   font-size: 2rem;
 }
 
@@ -57,31 +70,6 @@ header, .balance .value {
   justify-content: center;
 }
 
-.loading .indicator {
-  display: inline-block;
-  width: 64px;
-  height: 64px;
-  position: absolute;
-  left: calc(50% - 32px);
-}
-
-.loading .indicator:after {
-  content: " ";
-  display: block;
-  width: 46px;
-  height: 46px;
-  margin: 1px;
-  border-radius: 50%;
-  border: 5px solid #fff;
-  border-color: #fff transparent #fff transparent;
-  animation: loading-indicator 1.2s linear infinite;
-}
-
-@keyframes loading-indicator {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+.loading i {
+  font-size: 6rem;
 }

@@ -36,8 +36,20 @@ component =
     initialState key = { key, wallet: Nothing }
 
     render ∷ State → H.ComponentHTML Query
-    render { key, wallet } = HH.div [ HP.class_ $ ClassName "app" ] $ (HH.header_ [ HH.text "Purs" ]) : content
+    render { key, wallet } = HH.div [ HP.class_ $ ClassName "app" ] $ header : content
       where
+        header = HH.header_ $ (HH.h1_ [ HH.text "Purs" ]) : action
+        action =
+          case wallet of
+            Nothing →
+              []
+            Just _ →
+              [ HH.i
+                  [ HP.class_ $ ClassName "fa fa-refresh"
+                  , HE.onClick $ HE.input_ FetchWallet
+                  ]
+                  []
+              ]
         content =
           case wallet of
             Nothing →
@@ -46,7 +58,7 @@ component =
                   [ HH.div [ HP.class_ $ ClassName "no-key" ] [ HH.text "No key selected" ] ]
                 Just _ →
                   [ HH.div [ HP.class_ $ ClassName "loading" ]
-                      [ HH.div [ HP.class_ $ ClassName "indicator" ] []
+                      [ HH.i [ HP.class_ $ ClassName "fa fa-spinner fa-spin" ] []
                       ]
                   ]
             Just { receiveAddress, balance } →
@@ -66,6 +78,7 @@ component =
       pure next
     eval (FetchWallet next) = do
       key ← H.gets _.key
+      H.put { key, wallet: Nothing }
       case key of
         Nothing →
           pure next
