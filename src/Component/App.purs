@@ -67,7 +67,8 @@ component =
                   , HH.div [ HP.class_ $ ClassName "value" ] [ HH.text $ show balance ]
                   ]
               , HH.div [ HP.class_ $ ClassName "receive-address-qrcode" ]
-                  [ HH.img [ HP.src $ "https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=" <> receiveAddress ]
+                  [ HH.img
+                      [ HP.src $ "https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=" <> receiveAddress ]
                   ]
               , HH.div [ HP.class_ $ ClassName "receive-address-text" ] [ HH.text receiveAddress ]
               ]
