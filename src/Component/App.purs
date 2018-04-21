@@ -1,4 +1,4 @@
-module Component.App (Query(ChangeKey, FetchWallet), component) where
+module Component.App (Query(ChangeKey, FetchWallet), Message(KeyChanged), component) where
 
 import Prelude
 import Control.Monad.Aff (Aff)
@@ -14,11 +14,13 @@ import Network.HTTP.Affjax (AJAX)
 
 type State = { key ∷ Maybe String, wallet ∷ Maybe Wallet }
 
-data Query a = ChangeKey (Maybe String) a | FetchWallet a
+data Query a
+  = ChangeKey (Maybe String) a
+  | FetchWallet a
 
 type Input = Maybe String
 
-type Message = Void
+data Message = KeyChanged (Maybe String)
 
 component ∷ ∀ a. H.Component HH.HTML Query Input Message (Aff (ajax ∷ AJAX | a))
 component =
@@ -76,6 +78,7 @@ component =
     eval ∷ Query ~> H.ComponentDSL State Query Message (Aff (ajax ∷ AJAX | a))
     eval (ChangeKey key next) = do
       H.put { key, wallet: Nothing }
+      H.raise $ KeyChanged key
       pure next
     eval (FetchWallet next) = do
       key ← H.gets _.key

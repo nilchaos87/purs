@@ -32,7 +32,6 @@ main = runHalogenAff $ do
   body ← awaitBody
   key ← liftEff getKey
   io ← runUI App.component key body
-  io.query $ action App.FetchWallet
   runProcess (hashChangeProducer $$ hashChangeConsumer io.query)
 
 keyFromHash ∷ String → Maybe String
