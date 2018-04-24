@@ -34,8 +34,16 @@ header h1 {
 
 header i {
   position: absolute;
-  right: 1rem;
+  cursor: pointer;
   top: 1rem;
+}
+
+header i:first-child {
+  left: 1rem;
+}
+
+header i:last-child {
+  right: 1rem;
 }
 
 header, header h1, .balance .value {

@@ -18,7 +18,7 @@ import DOM.HTML (window)
 import DOM.HTML.Event.EventTypes (hashchange)
 import DOM.HTML.Event.HashChangeEvent (newURL)
 import DOM.HTML.Event.Types (HashChangeEvent, readHashChangeEvent)
-import DOM.HTML.Location (hash)
+import DOM.HTML.Location (hash, setHash)
 import DOM.HTML.Types (windowToEventTarget)
 import DOM.HTML.Window (location)
 import Halogen (action)
@@ -27,11 +27,12 @@ import Halogen.VDom.Driver (runUI)
 import Network.HTTP.Affjax (AJAX)
 import Component.App as App
 
-main ∷ Eff (HalogenEffects (ajax ∷ AJAX)) Unit
+main ∷ Eff (HalogenEffects (ajax ∷ AJAX, dom ∷ DOM)) Unit
 main = runHalogenAff $ do
   body ← awaitBody
   key ← liftEff getKey
   io ← runUI App.component key body
+  io.subscribe keyChangeConsumer
   runProcess (hashChangeProducer $$ hashChangeConsumer io.query)
 
 keyFromHash ∷ String → Maybe String
@@ -39,8 +40,22 @@ keyFromHash "" = Nothing
 keyFromHash "#" = Nothing
 keyFromHash h = Just $ Str.drop 1 h
 
+keyToHash ∷ Maybe String → String
+keyToHash Nothing = ""
+keyToHash (Just k) = "#" <> k
+
 getKey ∷ ∀ e. Eff (dom ∷ DOM | e) (Maybe String)
 getKey = keyFromHash <$> (window >>= location >>= hash)
+
+keyChangeConsumer ∷ ∀ e. Consumer App.Message (Aff (HalogenEffects (dom ∷ DOM | e))) Unit
+keyChangeConsumer = consumer \msg → do
+  case msg of
+    App.KeyChanged key →
+      liftEff $ writeKeyToHash key
+  pure Nothing
+
+writeKeyToHash ∷ ∀ e. Maybe String → Eff (dom ∷ DOM | e) Unit
+writeKeyToHash h = (window >>= location >>= (setHash $ keyToHash h))
 
 hashChangeConsumer ∷ ∀ e. (App.Query ~> Aff (HalogenEffects e)) → Consumer HashChangeEvent (Aff (HalogenEffects e)) Unit
 hashChangeConsumer query = consumer \event → do
