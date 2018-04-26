@@ -34,8 +34,16 @@ header h1 {
 
 header i {
   position: absolute;
-  right: 1rem;
+  cursor: pointer;
   top: 1rem;
+}
+
+header i:first-child {
+  left: 1rem;
+}
+
+header i:last-child {
+  right: 1rem;
 }
 
 header, header h1, .balance .value {
@@ -72,4 +80,22 @@ header, header h1, .balance .value {
 
 .loading i {
   font-size: 6rem;
+}
+
+.no-key input {
+  border: 0;
+  outline: 0;
+  padding: 0.25rem;
+  background: #eee;
+  color: #333;
+  font-size: 2rem;
+  font-family: "Roboto", sans-serif;
+  text-align: center;
+  margin: 0 auto;
+  width: calc(100% - 2rem);
+  max-width: 500px;
+}
+
+.no-key input::placeholder {
+  color: #aaa;
 }
